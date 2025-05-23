@@ -16,17 +16,27 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
-                
+                @can('role-A')
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
                         {{ __('Data Pengguna') }}
                     </x-nav-link>
                 </div>
+                @endcan
+                @cannot('role-AO')
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('regsliks.index')" :active="request()->routeIs('regsliks.index')">
                         {{ __('Register SLIK') }}
                     </x-nav-link>
                 </div>
+                @endcannot
+                @can('role-AO')
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.index')">
+                        {{ __('Laporan Hasil SLIK') }}
+                    </x-nav-link>
+                </div>
+                @endcan
             </div>
 
             <!-- Settings Dropdown -->

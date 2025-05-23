@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\Regslik;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -11,7 +13,8 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        //
+        $jumlahRegslik  = Regslik::whereDate('created_at', Carbon::today())->count();
+         return view('dashboard',compact('jumlahRegslik'));
     }
 
     /**

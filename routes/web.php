@@ -1,28 +1,35 @@
 <?php
 
-use App\Http\Controllers\PermissionController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegslikController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('auth.login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('permissions', PermissionController::class);
+    
     Route::resource('users', UserController::class);
+
     Route::resource('regsliks', RegslikController::class);
+    Route::get('regslik-export', [RegslikController::class, 'export'])->name('regslik-export');
+
+    Route::resource('reports', ReportController::class);
+    Route::get('report-export', [RegslikController::class, 'export'])->name('report-export');
     
 });
 

@@ -3,15 +3,13 @@
 
     <x-slot name="header">
         <div class="flex flex-auto justify-between">
-            <h2 class="font-black text-xl text-blue-900 dark:text-blue-900">
-                {{ __('Register SLIK') }}
+            <h2 class="font-black text-2xl text-blue-900 dark:text-blue-900">
+                {{ __('Laporan Hasil SLIK') }}
             </h2>
             <div class="mb-2">
-                @cannot('role-AO')
-                <button onclick="return addData()" class="bg-blue-600 text-white font-bold px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                <button onclick="return addData()" class="bg-blue-600 text-white font-bold px-6 py-1 rounded-lg hover:bg-blue-700 transition">
                     + Tambah Data
                 </button>
-                @endcan
             </div>
         </div>
     </x-slot>
@@ -22,17 +20,17 @@
         <x-message></x-message>
         <div class="flex justify-between items-center mb-3">
             <!-- Filter -->
-            <form method="GET" action="{{ route('regsliks.index') }}" class="flex items-center gap-2">
-                <label for="filter" class="text-sm font-medium text-gray-700">Filter Kantor:</label>
-                <select name="kantor" id="filter" class="rounded-md border-gray-300 shadow-sm text-sm">
+            <form method="GET" action="{{ route('reports.index') }}" class="flex items-center gap-2">
+                <label for="filter" class="text-sm font-medium text-gray-700">Filter Status:</label>
+                <select name="status_slik" id="filter" class="rounded-md border-gray-300 shadow-sm text-sm">
                     <option value="">Semua</option>
-                    @foreach ($kantorList as $kantor)
-                        <option value="{{ $kantor }}" @if(request('kantor') == $kantor) selected @endif>{{ $kantor }}</option>
+                    @foreach ($statusList as $status_slik)
+                        <option value="{{ $status_slik }}" @if(request('status_slik') == $status_slik) selected @endif>{{ $status_slik }}</option>
                     @endforeach
                 </select>
                 <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700">Terapkan</button>
             </form>
-            <a href="{{ route('regslik-export', ['kantor' => request('kantor')]) }}" type="submit" class="bg-yellow-600 text-white px-6 py-1 rounded-md hover:bg-yellow-700">Print</a>
+            <a href="{{ route('report-export', ['status_slik' => request('status_slik')]) }}" type="submit" class="bg-yellow-600 text-white px-6 py-1 rounded-md hover:bg-yellow-700">Print</a>
             <!-- Optional: Add another button or search on the right side -->
         </div>
         <table style="width:100%" class="w-full text-sm text-center rtl:text-right text-white dark:text-black rounded-md shadow-xl">
@@ -42,71 +40,46 @@
                         No
                     </th>
                     <th scope="col" class="px-4 py-3">
-                        Kantor
+                        Nama Nasabah
                     </th>
                     <th scope="col" class="px-4 py-3">
-                        Account Officer
+                        Alamat Nasabah
                     </th>
                     <th scope="col" class="px-4 py-3">
-                        Nama Calon Debitur
+                        Status SLIK
                     </th>
                     <th scope="col" class="px-4 py-3">
-                        Sumber Berkas
-                    </th>
-                    <th scope="col" class="px-4 py-3">
-                        Sumber Supply
-                    </th>
-                    <th scope="col" class="px-4 py-3">
-                        Plafond Pengajuan
-                    </th>
-                    <th scope="col" class="px-4 py-3">
-                        Status
-                    </th>
-                    <th scope="col" class="px-4 py-3">
-                        Di Registrasi Oleh
+                        Di Laporkan Oleh
                     </th>
                     <th scope="col" class="px-4 py-3">
                         Dibuat Pada
                     </th>
-                    @cannot('role-AO')
                     <th scope="col" class="px-4 py-3">
                         Aksi
                     </th>
-                    @endcannot
                 </tr>
             </thead>
             <tbody id="tableBody">
                 @php
                 $no = 1;
                 @endphp
-                @forelse ($regsliks as $regslik)
+                @forelse ($reports as $report)
                     <tr >
-                        <td class="px-7 py-3">{{ $regslik->id }}</td>
-                        <td class="px-7 py-3">{{ $regslik->kantor }}</td>
-                        <td class="px-7 py-3">{{ $regslik->nama_ao }}</td>
-                        <td class="px-7 py-3">{{ $regslik->nama_cadeb }}</td>
-                        <td class="px-7 py-3">{{ $regslik->sumber_berkas }}</td>
-                        <td class="px-7 py-3">{{ $regslik->sumber_supply }}</td>
-                        <td class="px-7 py-3">{{ $regslik->plafond_pengajuan }}</td>
-                        <td class="px-7 py-3">{{ $regslik->status_cadeb }}</td>
-                        <td class="px-7 py-3">{{ $regslik->id_user }}</td>
+                        <td class="px-7 py-3">{{ $report->id }}</td>
+                        <td class="px-7 py-3">{{ $report->nama_nasabah }}</td>
+                        <td class="px-7 py-3">{{ $report->alamat_nasbah }}</td>
+                        <td class="px-7 py-3">{{ $report->status_slik }}</td>
+                        <td class="px-7 py-3">{{ $report->id_user }}</td>
                         <td class="px-7 py-3">
-                            {{\Carbon\Carbon::parse($regslik->created_at)->format('d M, Y')  }}</td>
+                            {{\Carbon\Carbon::parse($report->created_at)->format('d M, Y')  }}</td>
                         <td>
-                            @cannot('role-AO')
                             <button
-                            onclick="return updateData('{{ $regslik->id }}','{{ $regslik->pernyataan_kesediaan }}','{{ $regslik->kantor }}',
-                            '{{ $regslik->nama_ao }}','{{ $regslik->nama_cadeb }}','{{ $regslik->alamat_cadeb }}'
-                            ,'{{ $regslik->sumber_berkas }}','{{ $regslik->supply_berkas }}','{{ $regslik->sumber_supply }}'
-                            ,'{{ $regslik->plafond_pengajuan }}','{{ $regslik->status_cadeb }}','{{ $regslik->usaha_cadeb }}'
-                            ,'{{ $regslik->id_user }}','{{ route('regsliks.update', $regslik->id) }}')" 
+                            onclick="return updateData('{{ $report->id }}','{{ $report->file_hasil }}','{{ $report->nama_nasabah }}',
+                            '{{ $report->alamat_nasbah }}','{{ $report->status_slik }}','{{ $report->id_user }}','{{ route('reports.update', $report->id) }}')" 
                             class="bg-gray-600 text-white font-bold px-3 py-1 rounded-lg hover:bg-gray-700 transition">Edit</button>
-                            @endcannot
-                            @cannot('role-AO')
                             <button
-                            onclick="return deleteData('{{ $regslik->id }}', '{{ route('regsliks.destroy', $regslik->id) }}')"
+                            onclick="return deleteData('{{ $report->id }}','{{ route('reports.destroy', $report->id) }}')"
                             class="bg-red-600 text-white font-bold px-3 py-1 rounded-lg hover:bg-red-700 transition">Hapus</button>
-                            @endcannot
                         </td>
                     </tr>
                     <!-- forelse empty row mimic -->
@@ -121,7 +94,7 @@
             </tbody>
         </table>
         <div class="my-3">
-            {{ $regsliks->appends(request()->query())->links() }}
+            {{ $reports->appends(request()->query())->links() }}
         </div>
         
     </div>
@@ -129,8 +102,8 @@
     {{-- MODAL ADD DATA --}}
         <div id="modal-addData" class="hidden fixed inset-0 flex justify-center items-center m-4">
             <div class="bg-white rounded-lg p-4 w-1/2 max-h-[90vh] overflow-y-auto shadow-xl">
-                <h2 class="text-xl font-bold mb-4 bg-blue-200 p-3 rounded-xl">Tambah Register SLIK</h2>
-                <form enctype="multipart/form-data" id="addForm" action="{{ route('regsliks.store') }}" method="post" class="w-full">
+                <h2 class="text-xl font-bold mb-4 bg-blue-200 p-3 rounded-xl">Tambah Laporan</h2>
+                <form enctype="multipart/form-data" id="addForm" action="{{ route('reports.store') }}" method="post" class="w-full">
                     @csrf
                     <p id="modal-content"></p>
                     <div class="text-center">
@@ -147,9 +120,9 @@
         </div>
 
     {{-- MODAL UPDATE DATA --}}
-        <div id="modal-updateData" class="hidden fixed inset-0 flex justify-center items-center m-4">
+        {{-- <div id="modal-updateData" class="hidden fixed inset-0 flex justify-center items-center m-4">
             <div class="bg-white rounded-lg p-6 w-1/2 max-h-[90vh] overflow-y-auto shadow-xl">
-                <h2 class="text-lg font-bold mb-4 bg-blue-200 p-2 rounded-xl">Perbarui Register SLIK</h2>
+                <h2 class="text-lg font-bold mb-4 bg-blue-200 p-2 rounded-xl">Perbarui Laporan Hasil</h2>
                 <form enctype="multipart/form-data" id="updateForm" action="" method="post" class="w-full">
                     @csrf
                     @method('PATCH')
@@ -163,7 +136,7 @@
                     </button>
                 </form>
             </div>
-        </div>
+        </div> --}}
 
     {{-- MODAL DELETE DATA --}}
         <div id="modal-deleteData" class="hidden fixed inset-0 flex justify-center items-center m-4 bg-black/30 z-50">
@@ -187,20 +160,20 @@
   
     {{-- SCRIPT MODAL ADD --}}
         <script>
-            function previewImage() {
-            const logo = document.querySelector('#pernyataan_kesediaan');
-            const imgPreview = document.querySelector('.img-preview');
+        //     function previewImage() {
+        //     const logo = document.querySelector('#file_hasil');
+        //     const imgPreview = document.querySelector('.img-preview');
 
 
-            const oFReader = new FileReader();
-            oFReader.readAsDataURL(logo.files[0]);
+        //     const oFReader = new FileReader();
+        //     oFReader.readAsDataURL(logo.files[0]);
 
-            oFReader.onload = function(oFREvent) {
-                imgPreview.src = oFREvent.target.result;
-            imgPreview.style.display = 'block';
+        //     oFReader.onload = function(oFREvent) {
+        //         imgPreview.src = oFREvent.target.result;
+        //     imgPreview.style.display = 'block';
 
-            }
-        }
+        //     }    
+        // }
             function addData() {
                 const modalContent = document.getElementById("modal-content");
                 modalContent.innerHTML = `
@@ -208,51 +181,19 @@
                     <div class="px-2 py-3">
                         <label for="" class="text-lg font-medium">Upload File<span class="text-red-500">*</span></label>
                         <div class="my-3">
-                        
                         <input class="border-blue-300 shadow-sm w-full rounded-lg mb-3" 
-                        name="pernyataan_kesediaan" id="pernyataan_kesediaan" type="file" onchange="previewImage()">
-                        <img class="img-preview img-fluid mb-3 col-sm-2 text-center" style="display: none; width:150px">
-                            @error('pernyataan_kesediaan')
+                        name="file_hasil" id="file_hasil" type="file">
+                            @error('file_hasil')
                                 p class="text-red-500 font-medium"> {{ $message }} </p>
                             @enderror
                         </div>
                     </div>
                     <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Kantor<span class="text-red-500">*</span></label>
-                        <div class="my-3">
-                            <select id="kantor" name="kantor" class="form-control border-blue-300 shadow-sm w-full rounded-lg"  data-placeholder="Pilih Kantor">
-                                <option value="">Pilih...</option>
-                                <option value="Ciawi">Kantor Ciawi</option>
-                                <option value="Rajapolah">Kantor Rajapolah</option>
-                                <option value="Manonjaya">Kantor Manonjaya</option>
-                                <option value="KPO">Kantor Pusat Operasional Singaparna</option>
-                            </select>
-                        </div>
-                        @error('kantor')
-                            p class="text-red-500 font-medium"> {{ $message }} </p>
-                        @enderror
-                    </div>
-                    <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Account Officer<span class="text-red-500">*</span></label>
-                        <div class="my-3">
-                            <select id="nama_ao" name="nama_ao" class="form-control border-blue-300 shadow-sm w-full rounded-lg"  data-placeholder="Pilih Account Officer">
-                                <option value="">Pilih...</option>
-                                <option value="Warif">Warif</option>
-                                <option value="Senja">Senja</option>
-                                <option value="Ryan">Ryan</option>
-                                <option value="Heru">Heru</option>
-                            </select>
-                        </div>
-                        @error('nama_ao')
-                            p class="text-red-500 font-medium"> {{ $message }} </p>
-                        @enderror
-                    </div>
-                    <div class="px-2 py-3">
                         <label for="" class="text-lg font-medium">Nama Calon Debitur</label>
                         <div class="my-3">
-                        <input name="nama_cadeb" id="nama_cadeb" type="text" placeholder="Isi nama cadeb" 
+                        <input name="nama_nasabah" id="nama_nasabah" type="text" placeholder="Isi nama nasabah" 
                         class="border-blue-300 shadow-sm w-full rounded-lg">
-                            @error('nama_cadeb')
+                            @error('nama_nasabah')
                                 p class="text-red-500 font-medium"> {{ $message }} </p>
                             @enderror
                         </div>
@@ -260,71 +201,9 @@
                     <div class="px-2 py-3">
                         <label for="" class="text-lg font-medium">Alamat Calon Debitur</label>
                         <div class="my-3">
-                        <input name="alamat_cadeb" id="alamat_cadeb" type="text" placeholder="Isi alamat cadeb" 
+                        <input name="alamat_nasabah" id="alamat_nasabah" type="text" placeholder="Isi alamat cadeb" 
                         class="border-blue-300 shadow-sm w-full rounded-lg">
-                            @error('alamat_cadeb')
-                                p class="text-red-500 font-medium"> {{ $message }} </p>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Sumber Berkas<span class="text-red-500">*</span></label>
-                        <div class="my-3">
-                            <select id="sumber_berkas" name="sumber_berkas" class="form-control border-blue-300 shadow-sm w-full rounded-lg"  data-placeholder="Pilih Bagian">
-                                <option value="">Pilih...</option>
-                                <option value="Existing">Existing 40-50%</option>
-                                <option value="Lunas">Debitur Lunas</option>
-                                <option value="Suplai Map">Suplai Map Karyawan</option>
-                                <option value="Pasar & Penabung">Pasar & Penabung Aktif</option>
-                                <option value="Baru">Nasabah Baru / Datang ke Kantor</option>
-                            </select>
-                        </div>
-                        @error('sumber_berkas')
-                            p class="text-red-500 font-medium"> {{ $message }} </p>
-                        @enderror
-                    </div>
-                    <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Supply Berkas<span class="text-red-500">*</span></label>
-                        <div class="my-3">
-                            <select id="supply_berkas" name="supply_berkas" class="form-control border-blue-300 shadow-sm w-full rounded-lg"  data-placeholder="Pilih Bagian">
-                                <option value="">Pilih...</option>
-                                <option value="Warif">Warif</option>
-                                <option value="Senja">Senja</option>
-                                <option value="Heru">Heru</option>
-                                <option value="Anggi">Anggi</option>
-                                <option value="Fachrul">Fachrul</option>
-                                <option value="Rebbiya">Rebbiya</option>
-                                <option value="Delia">Delia</option>
-                                <option value="Dian H">Dian H</option>
-                                <option value="Dian W">Dian W</option>
-                            </select>
-                        </div>
-                        @error('supply_berkas')
-                            p class="text-red-500 font-medium"> {{ $message }} </p>
-                        @enderror
-                    </div>
-                    <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Sumber Supply<span class="text-red-500">*</span></label>
-                        <div class="my-3">
-                            <select id="sumber_supply" name="sumber_supply" class="form-control border-blue-300 shadow-sm w-full rounded-lg"  data-placeholder="Pilih Bagian">
-                                <option value="">Pilih...</option>
-                                <option value="Promosi">Promosi / Brosur</option>
-                                <option value="Datang ke Kantor">Datang ke Kantor</option>
-                                <option value="Karyawan">Karyawan</option>
-                                <option value="Customer Get Customer">Customer Get Customer</option>
-                                <option value="Media Sosial">Media Sosial</option>
-                            </select>
-                        </div>
-                        @error('sumber_supply')
-                            p class="text-red-500 font-medium"> {{ $message }} </p>
-                        @enderror
-                    </div>
-                    <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Plafond Pengajuan</label>
-                        <div class="my-3">
-                        <input name="plafond_pengajuan" id="plafond_pengajuan" type="text" placeholder="Isi nama cadeb" 
-                        class="border-blue-300 shadow-sm w-full rounded-lg">
-                            @error('plafond_pengajuan')
+                            @error('alamat_nasabah')
                                 p class="text-red-500 font-medium"> {{ $message }} </p>
                             @enderror
                         </div>
@@ -332,30 +211,18 @@
                     <div class="px-2 py-3">
                         <label for="" class="text-lg font-medium">Status Nasabah<span class="text-red-500">*</span></label>
                         <div class="my-3">
-                            <select id="status_cadeb" name="status_cadeb" class="form-control border-blue-300 shadow-sm w-full rounded-lg"  data-placeholder="Pilih Bagian">
+                            <select id="status_slik" name="status_slik" class="form-control border-blue-300 shadow-sm w-full rounded-lg"  data-placeholder="Pilih Bagian">
                                 <option value="">Pilih...</option>
-                                <option value="Mengulang">Mengulang</option>
-                                <option value="Baru">Baru</option>
-                                <option value="Restruk">Restruk</option>
-                                <option value="Karyawan">Karyawan</option>
+                                <option value="Diterima">Diterima</option>
+                                <option value="Ditolak">Ditolak</option>
                             </select>
                         </div>
-                        @error('status_cadeb')
+                        @error('status_slik')
                             p class="text-red-500 font-medium"> {{ $message }} </p>
                         @enderror
                     </div>
                     <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Usaha Calon Debitur</label>
-                        <div class="my-3">
-                        <input name="usaha_cadeb" id="usaha_cadeb" type="text" placeholder="Isi nama cadeb" 
-                        class="border-blue-300 shadow-sm w-full rounded-lg">
-                            @error('usaha_cadeb')
-                                p class="text-red-500 font-medium"> {{ $message }} </p>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Di Registrasi Oleh</label>
+                        <label for="" class="text-lg font-medium">Di Laporkan Oleh</label>
                         <div class="my-3">
                         <input value="{{Auth::user()->name }}" id="id_user" name="id_user" type="text" placeholder="" 
                         class="border-blue-300 shadow-sm w-full rounded-lg">
@@ -376,7 +243,7 @@
             }
         </script>
 
-    {{-- SCRIPT MODAL UPDATE --}}
+    {{-- SCRIPT MODAL UPDATE
         <script>
             function previewImage() {
             const logo = document.querySelector('#pernyataan_kesediaan');
@@ -572,7 +439,7 @@
                 event.preventDefault();
                 document.getElementById("modal-updateData").classList.add("hidden");
             }
-        </script>
+        </script> --}}
 
     {{-- SCRIPT MODAL DELETE --}}
         <script>
