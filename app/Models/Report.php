@@ -9,7 +9,7 @@ class Report extends Model
      protected $fillable = [
         'file_hasil',
         'nama_nasabah',
-        'alamat_nasbah',
+        'alamat_nasabah',
         'status_slik',
         'id_user'
     ];

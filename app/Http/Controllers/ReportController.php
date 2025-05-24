@@ -46,7 +46,7 @@ class ReportController extends Controller
     {
         $request->validate([
             'nama_nasabah' => 'required|string|max:255',
-            'alamat_nasbah' => 'required|string|max:255',
+            'alamat_nasabah' => 'required|string|max:255',
             'status_slik' => 'required|string|max:255',
             'id_user' => 'required|string|max:255',
             'file_hasil' => 'nullable', // max 2MB
@@ -61,14 +61,12 @@ class ReportController extends Controller
     }
         Report::create([
             'nama_nasabah' => $request->nama_nasabah,
-            'alamat_nasbah' => $request->alamat_nasbah,
+            'alamat_nasabah' => $request->alamat_nasabah,
             'status_slik' => $request->status_slik,
             'id_user' => $request->id_user,
             'file_hasil' => $filePath,
         ]);
-        return redirect()->back()->with([
-            'success' => 'Register berhasil ditambahkan!'
-        ]);
+        return redirect()->back()->with('success', 'Register berhasil ditambahkan!');
     }
 
     /**

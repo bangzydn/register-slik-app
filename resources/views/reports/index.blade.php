@@ -67,7 +67,7 @@
                     <tr >
                         <td class="px-7 py-3">{{ $report->id }}</td>
                         <td class="px-7 py-3">{{ $report->nama_nasabah }}</td>
-                        <td class="px-7 py-3">{{ $report->alamat_nasbah }}</td>
+                        <td class="px-7 py-3">{{ $report->alamat_nasabah }}</td>
                         <td class="px-7 py-3">{{ $report->status_slik }}</td>
                         <td class="px-7 py-3">{{ $report->id_user }}</td>
                         <td class="px-7 py-3">

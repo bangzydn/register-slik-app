@@ -6,6 +6,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegslikController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PdfReaderController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -15,6 +16,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+Route::match(['GET', 'POST'], '/pdf-reader', [PdfReaderController::class, 'index'])->name('pdf-reader.index');
 
 
 Route::middleware('auth')->group(function () {
@@ -30,6 +32,8 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('reports', ReportController::class);
     Route::get('report-export', [RegslikController::class, 'export'])->name('report-export');
+
+    
     
 });
 

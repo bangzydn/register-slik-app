@@ -37,6 +37,13 @@
                     </x-nav-link>
                 </div>
                 @endcan
+                @can('role-AO')
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('pdf-reader.index')" :active="request()->routeIs('pdf-reader.index')">
+                        {{ __('PDF Reader') }}
+                    </x-nav-link>
+                </div>
+                @endcan
             </div>
 
             <!-- Settings Dropdown -->
