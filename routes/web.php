@@ -16,7 +16,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::match(['GET', 'POST'], '/pdf-reader', [PdfReaderController::class, 'index'])->name('pdf-reader.index');
+
 
 
 Route::middleware('auth')->group(function () {
@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('reports', ReportController::class);
     Route::get('report-export', [ReportController::class, 'export'])->name('report-export');
+    Route::post('/preview-pdf', [ReportController::class, 'previewPdf'])->name('preview.pdf');
 
     
     

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Storage;
+
+use Illuminate\Support\Facades\Storage;
 use App\Models\Regslik;
 use App\Exports\UsersExport;
 use Illuminate\Http\Request;
@@ -30,7 +31,7 @@ class RegslikController extends Controller
         }
 
         // Ambil data paginated
-        $regsliks = $query->paginate(1);
+        $regsliks = $query->paginate(2);
 
         return view('regsliks.index', compact('regsliks', 'kantorList', 'users'));
         

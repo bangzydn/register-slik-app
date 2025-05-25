@@ -2,6 +2,7 @@
     
 
     <x-slot name="header">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <div class="flex flex-auto justify-between">
             <h2 class="font-black text-2xl text-blue-900 dark:text-blue-900">
                 {{ __('Laporan Hasil SLIK') }}
@@ -32,7 +33,7 @@
                         <option value="{{ $status_slik }}" @if(request('status_slik') == $status_slik) selected @endif>{{ $status_slik }}</option>
                     @endforeach
                 </select>
-                <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700">Terapkan</button>
+                <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700">Filter</button>
             </form>
             <a href="{{ route('report-export', ['status_slik' => request('status_slik')]) }}" type="submit" class="bg-yellow-600 text-white px-6 py-1 rounded-md hover:bg-yellow-700">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -191,72 +192,155 @@
         //     }    
         // }
             function addData() {
-                const modalContent = document.getElementById("modal-content");
-                modalContent.innerHTML = `
-                <div class="grid grid-cols-2"> 
-                    <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Upload File<span class="text-red-500">*</span></label>
-                        <div class="my-3">
+            const modalContent = document.getElementById("modal-content");
+            modalContent.innerHTML = `
+            <div class="grid grid-cols-2"> 
+                <div class="px-2 py-3">
+                    <label for="" class="text-lg font-medium">Upload File<span class="text-red-500">*</span></label>
+                    <div class="my-3">
                         <input class="border-blue-300 shadow-sm w-full rounded-lg mb-3" 
-                        name="file_hasil" id="file_hasil" type="file">
-                            @error('file_hasil')
-                                p class="text-red-500 font-medium"> {{ $message }} </p>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Nama Calon Debitur</label>
-                        <div class="my-3">
-                        <input name="nama_nasabah" id="nama_nasabah" type="text" placeholder="Isi nama nasabah" 
-                        class="border-blue-300 shadow-sm w-full rounded-lg">
-                            @error('nama_nasabah')
-                                p class="text-red-500 font-medium"> {{ $message }} </p>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Alamat Calon Debitur</label>
-                        <div class="my-3">
-                        <input name="alamat_nasabah" id="alamat_nasabah" type="text" placeholder="Isi alamat cadeb" 
-                        class="border-blue-300 shadow-sm w-full rounded-lg">
-                            @error('alamat_nasabah')
-                                p class="text-red-500 font-medium"> {{ $message }} </p>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Status Nasabah<span class="text-red-500">*</span></label>
-                        <div class="my-3">
-                            <select id="status_slik" name="status_slik" class="form-control border-blue-300 shadow-sm w-full rounded-lg"  data-placeholder="Pilih Bagian">
-                                <option value="">Pilih...</option>
-                                <option value="Diterima">Diterima</option>
-                                <option value="Ditolak">Ditolak</option>
-                            </select>
-                        </div>
-                        @error('status_slik')
-                            p class="text-red-500 font-medium"> {{ $message }} </p>
+                        name="file_hasil" id="file_hasil" type="file" accept=".pdf" onchange="previewPdfData()">
+                        @error('file_hasil')
+                            <p class="text-red-500 font-medium"> {{ $message }} </p>
                         @enderror
-                    </div>
-                    <div class="px-2 py-3">
-                        <label for="" class="text-lg font-medium">Di Laporkan Oleh</label>
-                        <div class="my-3">
-                        <input value="{{Auth::user()->name }}" id="id_user" name="id_user" type="text" placeholder="" 
-                        class="border-blue-300 shadow-sm w-full rounded-lg">
-                            @error('id_user')
-                                p class="text-red-500 font-medium"> {{ $message }} </p>
-                            @enderror
+                        <div id="pdf-loading" class="hidden text-blue-500 text-sm mt-2">
+                            <i class="fas fa-spinner fa-spin"></i> Membaca data PDF...
                         </div>
+                        <div id="pdf-error" class="hidden text-red-500 text-sm mt-2"></div>
                     </div>
                 </div>
-                `;
-                const modal = document.getElementById("modal-addData");
-                modal.classList.remove("hidden");
+                <div class="px-2 py-3">
+                    <label for="" class="text-lg font-medium">Nama Calon Debitur</label>
+                    <div class="my-3">
+                        <input name="nama_nasabah" id="nama_nasabah" type="text" placeholder="Akan terisi otomatis dari PDF" 
+                        class="border-blue-300 shadow-sm w-full rounded-lg">
+                        @error('nama_nasabah')
+                            <p class="text-red-500 font-medium"> {{ $message }} </p>
+                        @enderror
+                    </div>
+                </div>
+                <div class="px-2 py-3">
+                    <label for="" class="text-lg font-medium">Alamat Calon Debitur</label>
+                    <div class="my-3">
+                        <input name="alamat_nasabah" id="alamat_nasabah" type="text" placeholder="Akan terisi otomatis dari PDF" 
+                        class="border-blue-300 shadow-sm w-full rounded-lg">
+                        @error('alamat_nasabah')
+                            <p class="text-red-500 font-medium"> {{ $message }} </p>
+                        @enderror
+                    </div>
+                </div>
+                <div class="px-2 py-3">
+                    <label for="" class="text-lg font-medium">Status Nasabah<span class="text-red-500">*</span></label>
+                    <div class="my-3">
+                        <select id="status_slik" name="status_slik" class="form-control border-blue-300 shadow-sm w-full rounded-lg"  data-placeholder="Pilih Bagian">
+                            <option value="">Pilih...</option>
+                            <option value="Diterima">Diterima</option>
+                            <option value="Ditolak">Ditolak</option>
+                        </select>
+                    </div>
+                    @error('status_slik')
+                        <p class="text-red-500 font-medium"> {{ $message }} </p>
+                    @enderror
+                </div>
+                <div class="px-2 py-3">
+                    <label for="" class="text-lg font-medium">Di Laporkan Oleh</label>
+                    <div class="my-3">
+                        <input value="{{Auth::user()->name }}" id="id_user" name="id_user" type="text" placeholder="" 
+                        class="border-blue-300 shadow-sm w-full rounded-lg">
+                        @error('id_user')
+                            <p class="text-red-500 font-medium"> {{ $message }} </p>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            `;
+            const modal = document.getElementById("modal-addData");
+            modal.classList.remove("hidden");
+        }
+
+        function previewPdfData() {
+            const fileInput = document.getElementById('file_hasil');
+            const loadingDiv = document.getElementById('pdf-loading');
+            const errorDiv = document.getElementById('pdf-error');
+            const namaInput = document.getElementById('nama_nasabah');
+            const alamatInput = document.getElementById('alamat_nasabah');
+
+            if (!fileInput.files[0]) {
+                return;
             }
 
-            function closeModalAdd() {
-                const modal = document.getElementById("modal-addData");
-                modal.classList.add("hidden");
-            }
+            // Show loading state
+            loadingDiv.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            
+            // Clear previous values
+            namaInput.value = '';
+            alamatInput.value = '';
+
+            // Create FormData to send file
+            const formData = new FormData();
+            formData.append('file_hasil', fileInput.files[0]);
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+
+            // Send AJAX request to preview PDF
+            fetch('/preview-pdf', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingDiv.classList.add('hidden');
+                
+                if (data.success) {
+                    // Fill the form fields with extracted data
+                    if (data.data.nama_nasabah) {
+                        namaInput.value = data.data.nama_nasabah;
+                        namaInput.style.backgroundColor = '#f0f9ff'; // Light blue background to show it's auto-filled
+                    }
+                    
+                    if (data.data.alamat_nasabah) {
+                        alamatInput.value = data.data.alamat_nasabah;
+                        alamatInput.style.backgroundColor = '#f0f9ff'; // Light blue background to show it's auto-filled
+                    }
+                    
+                    if (!data.data.nama_nasabah && !data.data.alamat_nasabah) {
+                        errorDiv.innerHTML = 'Data nama dan alamat tidak ditemukan dalam PDF. Silakan isi manual.';
+                        errorDiv.classList.remove('hidden');
+                    } else {
+                        // Show success message
+                        const successMsg = document.createElement('div');
+                        successMsg.className = 'text-green-500 text-sm mt-2';
+                        successMsg.innerHTML = '<i class="fas fa-check"></i> Data berhasil diekstrak dari PDF';
+                        fileInput.parentNode.appendChild(successMsg);
+                        
+                        // Remove success message after 3 seconds
+                        setTimeout(() => {
+                            if (successMsg.parentNode) {
+                                successMsg.parentNode.removeChild(successMsg);
+                            }
+                        }, 3000);
+                    }
+                } else {
+                    errorDiv.innerHTML = data.message;
+                    errorDiv.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                loadingDiv.classList.add('hidden');
+                errorDiv.innerHTML = 'Terjadi kesalahan saat membaca PDF';
+                errorDiv.classList.remove('hidden');
+                console.error('Error:', error);
+            });
+        }
+
+        function closeModalAdd() {
+            const modal = document.getElementById("modal-addData");
+            modal.classList.add("hidden");
+        }
+
         </script>
 
     {{-- SCRIPT MODAL UPDATE
