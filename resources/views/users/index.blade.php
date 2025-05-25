@@ -4,7 +4,7 @@
     <x-slot name="header">
         <div class="flex flex-auto justify-between">
             <h2 class="font-black text-xl text-blue-900 dark:text-blue-900">
-                {{ __('Data Bagian') }}
+                {{ __('Data Pengguna') }}
             </h2>
             <div class="mb-2">
                 <button onclick="return addData()" class="bg-blue-600 text-white font-bold px-6 py-2 rounded-lg hover:bg-blue-700 transition">
@@ -81,7 +81,7 @@
 
     {{-- MODAL ADD DATA --}}
     <div id="modal-addData" class="hidden fixed inset-0 flex justify-center items-center m-4">
-        <div class="bg-white rounded-lg p-4 w-1/2 shadow-xl">
+        <div class="bg-white rounded-lg p-4 w-1/2 shadow-xl max-h-[90vh] overflow-y-auto">
             <h2 class="text-xl font-bold mb-4 bg-blue-200 p-3 rounded-xl">Tambah Pengguna</h2>
             <form id="addForm" action="{{ route('users.store') }}" method="post" class="w-full">
                 @csrf
@@ -101,8 +101,8 @@
 
     {{-- MODAL UPDATE DATA --}}
         <div id="modal-updateData" class="hidden fixed inset-0 flex justify-center items-center m-4">
-            <div class="bg-white rounded-lg p-6 lg:w-4/12 w-full shadow-xl">
-                <h2 class="text-lg font-bold mb-4 bg-amber-100 p-2 rounded-xl">Perbarui Pengguna</h2>
+            <div class="bg-white rounded-lg p-6 lg:w-4/12 w-full shadow-xl max-h-[90vh] overflow-y-auto">
+                <h2 class="text-lg font-bold mb-4 bg-blue-200 p-2 rounded-xl">Perbarui Pengguna</h2>
                 <form id="updateForm" action="" method="post" class="w-full">
                     @csrf
                     @method('PATCH')
@@ -269,7 +269,7 @@
                             <select id="status_p" name="status_p" class="form-control border-blue-300 shadow-sm w-full rounded-lg"  data-placeholder="Pilih Bagian">
                                 <option value="">Pilih...</option>
                                 <option value="Aktif" ${status_p === 'Aktif' ? 'selected' : ''}>Aktif</option>
-                                <option value="Non-Aktif" ${status_p === 'Non-Aktif' ? 'selected' : ''}>Non-Aktif Service</option>
+                                <option value="Non-Aktif" ${status_p === 'Non-Aktif' ? 'selected' : ''}>Non-Aktif</option>
                             </select>
                         </div>
                         @error('status_p')

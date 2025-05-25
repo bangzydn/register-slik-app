@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::get('regslik-export', [RegslikController::class, 'export'])->name('regslik-export');
 
     Route::resource('reports', ReportController::class);
-    Route::get('report-export', [RegslikController::class, 'export'])->name('report-export');
+    Route::get('report-export', [ReportController::class, 'export'])->name('report-export');
 
     
     

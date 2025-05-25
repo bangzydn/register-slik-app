@@ -6,11 +6,15 @@
             <h2 class="font-black text-2xl text-blue-900 dark:text-blue-900">
                 {{ __('Laporan Hasil SLIK') }}
             </h2>
+            @cannot('role-CS')
+            @cannot('role-A')
             <div class="mb-2">
                 <button onclick="return addData()" class="bg-blue-600 text-white font-bold px-6 py-1 rounded-lg hover:bg-blue-700 transition">
                     + Tambah Data
                 </button>
             </div>
+            @endcannot
+            @endcannot
         </div>
     </x-slot>
 
@@ -30,7 +34,11 @@
                 </select>
                 <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700">Terapkan</button>
             </form>
-            <a href="{{ route('report-export', ['status_slik' => request('status_slik')]) }}" type="submit" class="bg-yellow-600 text-white px-6 py-1 rounded-md hover:bg-yellow-700">Print</a>
+            <a href="{{ route('report-export', ['status_slik' => request('status_slik')]) }}" type="submit" class="bg-yellow-600 text-white px-6 py-1 rounded-md hover:bg-yellow-700">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+            </a>
             <!-- Optional: Add another button or search on the right side -->
         </div>
         <table style="width:100%" class="w-full text-sm text-center rtl:text-right text-white dark:text-black rounded-md shadow-xl">
@@ -54,9 +62,13 @@
                     <th scope="col" class="px-4 py-3">
                         Dibuat Pada
                     </th>
+                    @cannot('role-CS')
+                    @cannot('role-A')
                     <th scope="col" class="px-4 py-3">
                         Aksi
                     </th>
+                    @endcannot
+                    @endcannot
                 </tr>
             </thead>
             <tbody id="tableBody">
@@ -73,6 +85,8 @@
                         <td class="px-7 py-3">
                             {{\Carbon\Carbon::parse($report->created_at)->format('d M, Y')  }}</td>
                         <td>
+                            @cannot('role-CS')
+                            @cannot('role-A')
                             <button
                             onclick="return updateData('{{ $report->id }}','{{ $report->file_hasil }}','{{ $report->nama_nasabah }}',
                             '{{ $report->alamat_nasbah }}','{{ $report->status_slik }}','{{ $report->id_user }}','{{ route('reports.update', $report->id) }}')" 
@@ -80,6 +94,8 @@
                             <button
                             onclick="return deleteData('{{ $report->id }}','{{ route('reports.destroy', $report->id) }}')"
                             class="bg-red-600 text-white font-bold px-3 py-1 rounded-lg hover:bg-red-700 transition">Hapus</button>
+                            @endcannot
+                            @endcannot
                         </td>
                     </tr>
                     <!-- forelse empty row mimic -->
